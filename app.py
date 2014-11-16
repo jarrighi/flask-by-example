@@ -27,7 +27,9 @@ def hello():
     try: 
       url = request.form['url']
       print url[:7]
-      if "http://" not in url[:7]:
+      if url[:5] == "https":
+        url = url[:4] + url[5:]
+      elif "http://" not in url[:7]:
         url = 'http://' + url
       r = requests.get(url)
       print r.text
