@@ -23,16 +23,15 @@ from models import *
 def hello():
   errors = []
   results = {}
+  r = ''
   if request.method == "POST":
     try: 
       url = request.form['url']
       print url[:7]
-      if url[:5] == "https":
-        url = url[:4] + url[5:]
-      elif "http://" not in url[:7]:
+      if "http" not in url[:7]:
         url = 'http://' + url
       r = requests.get(url)
-      print r.text
+      print "r:" + r.text
     except:
       errors.append(
         "Unable to get URL. Please make sure it's valid and try again."
