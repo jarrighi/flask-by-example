@@ -8,6 +8,7 @@ import os
 import requests
 import re
 import nltk
+import json
 from rq import Queue
 from rq.job import Job
 from worker import conn
@@ -61,17 +62,23 @@ def count_and_save_words(url):
 # Routes
 
 @app.route('/', methods=['GET', 'POST'])
-def hello():
-  results = {}
-  if request.method == "POST":
-    url = request.form['url']
-    if "http" not in url[:4]:
-      url = 'http://' + url
-  
-    job = q.enqueue_call(func=count_and_save_words, args=(url,), result_ttl=5000)
-    print job.get_id()
+def index():
+  return render_template('index.html')
 
-  return render_template('index.html', results=results)
+@app.route('/start', methods=['POST'])
+def get_counts():
+  # get url
+  data = json.loads(request.data)
+  url = data["url"]
+
+  # form URL, id necessary
+  if "http" not in url[:4]:
+    url = 'http://' + url
+  
+  # start job
+  job = q.enqueue_call(func=count_and_save_words, args=(url,), result_ttl=5000)
+
+  return job.get_id()
 
 @app.route('/<name>')
 def hello_name(name):
