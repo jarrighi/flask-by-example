@@ -20,7 +20,7 @@ app.config.from_object(os.environ['APP_SETTINGS'])
 db = SQLAlchemy(app)
 q = Queue(connection=conn)
 
-from models import Result
+from models import *
 
 # Helpers
 def count_and_save_words(url):
@@ -76,7 +76,7 @@ def get_counts():
     url = 'http://' + url
   
   # start job
-  job = q.enqueue_call(func=count_and_save_words, args=(url,), result_ttl=5000)
+  job = q.enqueue_call(func="app.count_and_save_words", args=(url,), result_ttl=5000)
 
   return job.get_id()
 
